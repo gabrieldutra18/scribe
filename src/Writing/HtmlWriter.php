@@ -106,10 +106,10 @@ class HtmlWriter
 
         // NB:These paths are wrong for laravel type but will be set correctly by the Writer class
         if ($this->config->get('postman.enabled', true)) {
-            $links[] = "<a href=\"{$this->assetPathPrefix}collection.json\">View Postman collection</a>";
+            $links[] = "<a href=\"{$this->assetPathPrefix}collection.json\">Postman collection</a>";
         }
         if ($this->config->get('openapi.enabled', false)) {
-            $links[] = "<a href=\"{$this->assetPathPrefix}openapi.yaml\">View OpenAPI spec</a>";
+            $links[] = "<a href=\"{$this->assetPathPrefix}openapi.yaml\">OpenAPI collection</a>";
         }
 
         $auth = $this->config->get('auth');
@@ -126,10 +126,10 @@ class HtmlWriter
             'title' => $this->config->get('title') ?: config('app.name', '') . ' Documentation',
             'example_languages' => $this->config->get('example_languages'),
             'logo' => $this->config->get('logo') ?? false,
-            'last_updated' => date("F j Y"),
+            'last_updated' => date("d/m/Y"),
             'auth' => $auth,
             'try_it_out' => $this->config->get('try_it_out'),
-            'links' => array_merge($links, ['<a href="http://github.com/knuckleswtf/scribe">Documentation powered by Scribe ✍</a>']),
+            'links' => array_merge($links),
         ];
     }
 }

@@ -1,5 +1,5 @@
 <b><code>{{ $name }}</code></b>&nbsp;&nbsp;@if($type)<small>{{ $type }}</small>@endif @if(!$required)
-    <i>optional</i>@endif &nbsp;
+    <i>opcional</i>@endif &nbsp;
 @if(($isInput ?? true) && empty($hasChildren))
     @php
         $isList = Str::endsWith($type, '[]');

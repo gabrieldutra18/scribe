@@ -19,7 +19,7 @@
     @endisset
 
     <div class="search">
-        <input type="text" class="search" id="input-search" placeholder="Search">
+        <input type="text" class="search" id="input-search" placeholder="Buscar">
     </div>
 
     <div id="toc">
@@ -128,6 +128,6 @@
         </ul>
     @endif
     <ul class="toc-footer" id="last-updated">
-        <li>Last updated: {{ $metadata['last_updated'] }}</li>
+        <li>Última atualização: {{ $metadata['last_updated'] }}</li>
     </ul>
 </div>

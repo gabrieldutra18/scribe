@@ -188,12 +188,6 @@ trait ParsesValidationRules
                 case 'required':
                     $parameterData['required'] = true;
                     break;
-                case 'accepted':
-                    $parameterData['required'] = true;
-                    $parameterData['type'] = 'boolean';
-                    $parameterData['description'] .= ' Must be accepted.';
-                    $parameterData['setter'] = fn() => true;
-                    break;
 
                 /*
                  * Primitive types. No description should be added
@@ -402,7 +396,7 @@ trait ParsesValidationRules
                  */
                 case 'in':
                     // Not using the rule description here because it only says "The attribute is invalid"
-                    $parameterData['description'] .= ' Must be one of ' . w::getListOfValuesAsFriendlyHtmlString($arguments) . ' ';
+                    $parameterData['description'] .= ' Deve ser um dos valores' . w::getListOfValuesAsFriendlyHtmlString($arguments) . ' ';
                     $parameterData['setter'] = function () use ($arguments) {
                         return Arr::random($arguments);
                     };
@@ -416,7 +410,7 @@ trait ParsesValidationRules
                     break;
                 case 'required_if':
                     $parameterData['description'] .= ' ' . $this->getDescription(
-                            $rule, [':other' => "<code>{$arguments[0]}</code>", ':value' => w::getListOfValuesAsFriendlyHtmlString(array_slice($arguments, 1))]
+                            $rule, [':other' => "<code>{$arguments[0]}</code>", ':value' => "<code>{$arguments[1]}</code>"]
                         ) . ' ';
                     break;
                 case 'required_unless':
@@ -440,11 +434,6 @@ trait ParsesValidationRules
                     $parameterData['description'] .= ' ' . $this->getDescription(
                             $rule, [':values' => w::getListOfValuesAsFriendlyHtmlString($arguments, "and")]
                         ) . ' ';
-                    break;
-                case 'accepted_if':
-                    $parameterData['type'] = 'boolean';
-                    $parameterData['description'] .= " Must be accepted when <code>$arguments[0]</code> is " . w::getListOfValuesAsFriendlyHtmlString(array_slice($arguments, 1));
-                    $parameterData['setter'] = fn() => true;
                     break;
                 case 'same':
                 case 'different':

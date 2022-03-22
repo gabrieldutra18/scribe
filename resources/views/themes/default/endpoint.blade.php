@@ -12,7 +12,7 @@
 {!! Parsedown::instance()->text($endpoint->metadata->description ?: '') !!}
 
 <span id="example-requests-{!! $endpoint->endpointId() !!}">
-<blockquote>Example request:</blockquote>
+<blockquote>Examplo de request:</blockquote>
 
 @foreach($metadata['example_languages'] as $language)
 
@@ -27,7 +27,7 @@
 @if($endpoint->isGet() || $endpoint->hasResponses())
     @foreach($endpoint->responses as $response)
         <blockquote>
-            <p>Example response ({{$response->description ?: $response->status}}):</p>
+            <p>Examplo de resposta ({{$response->description ?: $response->status}}):</p>
         </blockquote>
         @if(count($response->headers))
         <details class="annotation">
@@ -52,7 +52,7 @@
 @endif
 </span>
 <span id="execution-results-{{ $endpoint->endpointId() }}" hidden>
-    <blockquote>Received response<span
+    <blockquote>Resposta<span
                 id="execution-response-status-{{ $endpoint->endpointId() }}"></span>:
     </blockquote>
     <pre class="json"><code id="execution-response-content-{{ $endpoint->endpointId() }}"></code></pre>
@@ -70,23 +70,25 @@
       autocomplete="off"
       onsubmit="event.preventDefault(); executeTryOut('{{ $endpoint->endpointId() }}', this);">
     <h3>
+        <!--
         Request&nbsp;&nbsp;&nbsp;
         @if($metadata['try_it_out']['enabled'] ?? false)
             <button type="button"
                     style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
                     id="btn-tryout-{{ $endpoint->endpointId() }}"
-                    onclick="tryItOut('{{ $endpoint->endpointId() }}');">Try it out ⚡
+                    onclick="tryItOut('{{ $endpoint->endpointId() }}');">Testar ⚡
             </button>
             <button type="button"
                     style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
                     id="btn-canceltryout-{{ $endpoint->endpointId() }}"
-                    onclick="cancelTryOut('{{ $endpoint->endpointId() }}');" hidden>Cancel 🛑
+                    onclick="cancelTryOut('{{ $endpoint->endpointId() }}');" hidden>Cancelar 🛑
             </button>&nbsp;&nbsp;
             <button type="submit"
                     style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-executetryout-{{ $endpoint->endpointId() }}" hidden>Send Request 💥
+                    id="btn-executetryout-{{ $endpoint->endpointId() }}" hidden>Enviar Request 💥
             </button>
         @endif
+        -->
     </h3>
     @foreach($endpoint->httpMethods as $method)
         <p>

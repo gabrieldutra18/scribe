@@ -64,7 +64,7 @@ function cancelTryOut(endpointId) {
     document.querySelector(`#btn-tryout-${endpointId}`).hidden = false;
     const executeBtn = document.querySelector(`#btn-executetryout-${endpointId}`);
     executeBtn.hidden = true;
-    executeBtn.textContent = "Send Request 💥";
+    executeBtn.textContent = "Enviar Request 💥";
     document.querySelector(`#btn-canceltryout-${endpointId}`).hidden = true;
     // Hide inputs
     document.querySelectorAll(`input[data-endpoint=${endpointId}],label[data-endpoint=${endpointId}]`)
@@ -177,7 +177,7 @@ function handleError(endpointId, err) {
 
 async function executeTryOut(endpointId, form) {
     const executeBtn = document.querySelector(`#btn-executetryout-${endpointId}`);
-    executeBtn.textContent = "⏱ Sending...";
+    executeBtn.textContent = "⏱ Enviando...";
     executeBtn.scrollIntoView({behavior: "smooth", block: "center"});
 
     let body;
@@ -265,6 +265,6 @@ async function executeTryOut(endpointId, form) {
             handleError(endpointId, err);
         })
         .finally(() => {
-            executeBtn.textContent = "Send Request 💥";
+            executeBtn.textContent = "Enviar Request 💥";
         });
 }

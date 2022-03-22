@@ -2,7 +2,7 @@
 @foreach($parameters as $name => $parameter)
     @if($name === '[]')
         @php
-            $description = "The request body is an array (<code>{$parameter['type']}</code>`)";
+            $description = "O corpo da request é um array (<code>{$parameter['type']}</code>)";
             $description .= !empty($parameter['description']) ? ", representing ".lcfirst($parameter['description'])."." : '.';
         @endphp
         <p>
