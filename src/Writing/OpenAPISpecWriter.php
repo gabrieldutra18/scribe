@@ -43,7 +43,7 @@ class OpenAPISpecWriter
      *
      * @return array
      */
-    public function generateSpecContent(array $groupedEndpoints): array
+    public function generateSpecContent(array $groupedEndpoints)
     {
         return array_merge([
             'openapi' => self::VERSION,
@@ -119,7 +119,7 @@ class OpenAPISpecWriter
                         'name' => $name,
                         'description' => $details->description,
                         'example' => $details->example,
-                        // Currently, OAS requires path parameters to be required
+                        // Currently, Swagger requires path parameters to be required
                         'required' => true,
                         'schema' => [
                             'type' => $details->type,
@@ -147,7 +147,7 @@ class OpenAPISpecWriter
                     }
                     $parameters[] = $parameterData;
                 }
-                $pathItem['parameters'] = $parameters; // @phpstan-ignore-line
+                $pathItem['parameters'] = $parameters;
             }
 
             return [$path => $pathItem];
@@ -159,7 +159,7 @@ class OpenAPISpecWriter
      *
      * @param OutputEndpointData $endpoint
      *
-     * @return array<int, array<string,mixed>>
+     * @return array
      */
     protected function generateEndpointParametersSpec(OutputEndpointData $endpoint): array
     {

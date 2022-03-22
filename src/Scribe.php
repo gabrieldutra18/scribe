@@ -16,9 +16,8 @@ class Scribe
      */
     public static function beforeResponseCall(callable $callable)
     {
-        Globals::$__beforeResponseCall = $callable;
+        Globals::$beforeResponseCall = $callable;
     }
-
     /**
      * Specify a callback that will be executed when Scribe is done generating your docs.
      * This callback will receive a map of all the output paths generated, that looks like this:
@@ -38,22 +37,10 @@ class Scribe
      *
      * If you disabled `postman` or `openapi`, their values will be null.
      *
-     * @param callable(array): mixed $callable
+     * @param callable $callable
      */
     public static function afterGenerating(callable $callable)
     {
-        Globals::$__afterGenerating = $callable;
-    }
-
-    /**
-     * Specify a callback that will be used by all FormRequest strategies
-     * to instantiate Form Requests. his callback takes the name of the form request class,
-     * the current Laravel route being processed, and the controller method.
-     *
-     * @param callable(string,\Illuminate\Routing\Route,\ReflectionFunctionAbstract): mixed $callable
-     */
-    public static function instantiateFormRequestUsing(callable $callable)
-    {
-        Globals::$__instantiateFormRequestUsing = $callable;
+        Globals::$afterGenerating = $callable;
     }
 }

@@ -8,7 +8,8 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Knuckles\Camel\Extraction\ExtractedEndpointData;
 use Knuckles\Camel\Output\OutputEndpointData;
-use Knuckles\Scribe\Tools\Utils;
+use League\Flysystem\Adapter\Local;
+use League\Flysystem\Filesystem;
 use Symfony\Component\Yaml\Yaml;
 
 
@@ -61,15 +62,15 @@ class Camel
 
     public static function loadEndpointsFromCamelFiles(string $folder, callable $callback, bool $storeGroupFilePaths = true)
     {
-        $contents = Utils::listDirectoryContents($folder);
+        $adapter = new Local(getcwd());
+        $fs = new Filesystem($adapter);
+        $contents = $fs->listContents($folder);;
 
         foreach ($contents as $object) {
-            // Flysystem v1 had items as arrays; v2 has objects.
-            // v2 allows ArrayAccess, but when we drop v1 support (Laravel <9), we should switch to methods
             if (
                 $object['type'] == 'file'
-                && Str::endsWith(basename($object['path']), '.yaml')
-                && !Str::startsWith(basename($object['path']), 'custom.')
+                && Str::endsWith($object['basename'], '.yaml')
+                && !Str::startsWith($object['basename'], 'custom.')
             ) {
                 $group = Yaml::parseFile($object['path']);
                 if ($storeGroupFilePaths) {
@@ -83,16 +84,16 @@ class Camel
 
     public static function loadUserDefinedEndpoints(string $folder): array
     {
-        $contents = Utils::listDirectoryContents($folder);
+        $adapter = new Local(getcwd());
+        $fs = new Filesystem($adapter);
+        $contents = $fs->listContents($folder);;
 
         $userDefinedEndpoints = [];
         foreach ($contents as $object) {
-            // Flysystem v1 had items as arrays; v2 has objects.
-            // v2 allows ArrayAccess, but when we drop v1 support (Laravel <9), we should switch to methods
             if (
                 $object['type'] == 'file'
-                && Str::endsWith(basename($object['path']), '.yaml')
-                && Str::startsWith(basename($object['path']), 'custom.')
+                && Str::endsWith($object['basename'], '.yaml')
+                && Str::startsWith($object['basename'], 'custom.')
             ) {
                 $endpoints = Yaml::parseFile($object['path']);
                 foreach (($endpoints ?: []) as $endpoint) {
@@ -137,7 +138,6 @@ class Camel
             ->sortKeys(SORT_NATURAL);
 
         return $groupedEndpoints->map(function (Collection $endpointsInGroup) use ($endpointGroupIndexes) {
-            /** @var Collection<(int|string),ExtractedEndpointData> $endpointsInGroup */
             $sortedEndpoints = $endpointsInGroup;
             if (!empty($endpointGroupIndexes)) {
                 $sortedEndpoints = $endpointsInGroup->sortBy(

@@ -4,13 +4,11 @@ namespace Knuckles\Scribe\Tools;
 
 class Globals
 {
-    public const SCRIBE_VERSION = '3.25.0';
+    public const SCRIBE_VERSION = '3.21.0';
 
     public static bool $shouldBeVerbose = false;
 
-    public static $__beforeResponseCall;
+    public static $beforeResponseCall;
 
-    public static $__afterGenerating;
-
-    public static $__instantiateFormRequestUsing;
+    public static $afterGenerating;
 }

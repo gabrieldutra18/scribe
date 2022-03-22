@@ -6,14 +6,14 @@ use Closure;
 use DirectoryIterator;
 use Exception;
 use FastRoute\RouteParser\Std;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Routing\Route;
 use Illuminate\Support\Str;
 use Knuckles\Scribe\Exceptions\CouldntFindFactory;
 use Knuckles\Scribe\Tools\ConsoleOutputUtils as c;
+use League\Flysystem\Adapter\Local;
 use League\Flysystem\Filesystem;
-use League\Flysystem\Local\LocalFilesystemAdapter;
 use ReflectionClass;
 use ReflectionException;
 use ReflectionFunction;
@@ -100,36 +100,10 @@ class Utils
 
     public static function deleteDirectoryAndContents(string $dir, ?string $workingDir = null): void
     {
-        if (class_exists(LocalFilesystemAdapter::class)) {
-            // Flysystem 2+
-            $workingDir ??= getcwd();
-            $adapter = new LocalFilesystemAdapter($workingDir);
-            $fs = new Filesystem($adapter);
-            $dir = str_replace($workingDir, '', $dir);
-            $fs->deleteDirectory($dir);
-        } else {
-            // v1
-            $adapter = new \League\Flysystem\Adapter\Local($workingDir ?: getcwd());
-            $fs = new Filesystem($adapter);
-            $dir = str_replace($adapter->getPathPrefix(), '', $dir);
-            $fs->deleteDir($dir);
-        }
-    }
-
-    public static function listDirectoryContents(string $dir)
-    {
-        if (class_exists(LocalFilesystemAdapter::class)) {
-            // Flysystem 2+
-            $adapter = new LocalFilesystemAdapter(getcwd());
-            $fs = new Filesystem($adapter);
-            return $fs->listContents($dir);
-        } else {
-            // v1
-            $adapter = new \League\Flysystem\Adapter\Local(getcwd()); // @phpstan-ignore-line
-            $fs = new Filesystem($adapter); // @phpstan-ignore-line
-            $dir = str_replace($adapter->getPathPrefix(), '', $dir); // @phpstan-ignore-line
-            return $fs->listContents($dir);
-        }
+        $adapter = new Local($workingDir ?: getcwd());
+        $fs = new Filesystem($adapter);
+        $dir = str_replace($adapter->getPathPrefix(), '', $dir);
+        $fs->deleteDir($dir);
     }
 
     public static function copyDirectory(string $src, string $dest): void
@@ -157,21 +131,11 @@ class Utils
 
     public static function deleteFilesMatching(string $dir, callable $condition): void
     {
-        if (class_exists(LocalFilesystemAdapter::class)) {
-            // Flysystem 2+
-            $adapter = new LocalFilesystemAdapter(getcwd());
-            $fs = new Filesystem($adapter);
-            $contents = $fs->listContents(ltrim($dir, '/'));
-        } else {
-            // v1
-            $adapter = new \League\Flysystem\Adapter\Local(getcwd()); // @phpstan-ignore-line
-            $fs = new Filesystem($adapter); // @phpstan-ignore-line
-            $dir = str_replace($adapter->getPathPrefix(), '', $dir); // @phpstan-ignore-line
-            $contents = $fs->listContents(ltrim($dir, '/'));
-        }
+        $adapter = new Local(getcwd());
+        $fs = new Filesystem($adapter);
+        $dir = ltrim($dir, '/');
+        $contents = $fs->listContents($dir);
         foreach ($contents as $file) {
-            // Flysystem v1 had items as arrays; v2 has objects.
-            // v2 allows ArrayAccess, but when we drop v1 support (Laravel <9), we should switch to methods
             if ($file['type'] == 'file' && $condition($file) === true) {
                 $fs->delete($file['path']);
             }
@@ -218,14 +182,6 @@ class Utils
         return substr($typeName, 0, -2);
     }
 
-    /**
-     * @param string $modelName
-     * @param string[] $states
-     * @param string[] $relations
-     *
-     * @return \Illuminate\Database\Eloquent\Factories\Factory
-     * @throws \Throwable
-     */
     public static function getModelFactory(string $modelName, array $states = [], array $relations = [])
     {
         // Factories are usually defined without the leading \ in the class name,
@@ -252,7 +208,7 @@ class Utils
 
                 $factoryChain = empty($relationChain)
                     ? call_user_func_array([$relationModel, 'factory'], [])
-                    : Utils::getModelFactory($relationModel, $states, [implode('.', $relationChain)]);
+                    : Utils::getModelFactory($relationModel, $states, $relationChain);
 
                 if ($relationType === BelongsToMany::class) {
                     $pivot = method_exists($factory, 'pivot' . $relationVector)
@@ -260,8 +216,6 @@ class Utils
                         : [];
 
                     $factory = $factory->hasAttached($factoryChain, $pivot, $relationVector);
-                } else if ($relationType === BelongsTo::class) {
-                    $factory = $factory->for($factoryChain, $relationVector);
                 } else {
                     $factory = $factory->has($factoryChain, $relationVector);
                 }
